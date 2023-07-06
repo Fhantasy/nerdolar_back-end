@@ -3,6 +3,7 @@ import { Comment } from "./Comment";
 import { Follow } from "./Follow";
 import { Genre } from "./Genre";
 import { Like } from "./Like";
+import { MediaGenre } from "./MediaGenre";
 import { MediaProduct } from "./MediaProduct";
 import { Post } from "./Post";
 import { PostImage } from "./PostImage";
@@ -13,11 +14,11 @@ MediaProduct.belongsTo(Category);
 Category.hasMany(MediaProduct);
 
 MediaProduct.belongsToMany(Genre, {
-  through: "media_genres",
+  through: MediaGenre,
   as: "mediaProducts",
 });
 Genre.belongsToMany(MediaProduct, {
-  through: "media_genres",
+  through: MediaGenre,
   as: "genres",
 });
 
