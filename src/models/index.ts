@@ -51,10 +51,23 @@ User.hasMany(WatchIten, { as: "watchIten", foreignKey: "user_id" });
 User.belongsToMany(User, {
   through: Follow,
   foreignKey: "user_following_id",
-  as: "followings",
+  as: "followers",
 });
 User.belongsToMany(User, {
   through: Follow,
   foreignKey: "user_followed_id",
-  as: "followeds",
+  as: "following",
 });
+
+export {
+  User,
+  Category,
+  Comment,
+  Follow,
+  Genre,
+  Like,
+  MediaGenre,
+  MediaProduct,
+  Post,
+  PostImage,
+};

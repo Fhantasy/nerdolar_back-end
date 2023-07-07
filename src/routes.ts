@@ -1,5 +1,5 @@
 import express from "express";
-import { UserController } from "./controllers/UserController";
+import { UserController } from "./controllers/userController";
 import { CategoryController } from "./controllers/categoryController";
 
 const router = express.Router();
@@ -9,6 +9,7 @@ router.get("/", (req, res) => {
 });
 
 router.post("/register", UserController.create);
+router.get("/users/:id", UserController.show);
 
 router.get("/categories", CategoryController.all);
 router.get("/categories/:id", CategoryController.show);

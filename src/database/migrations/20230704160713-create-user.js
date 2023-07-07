@@ -7,52 +7,60 @@ module.exports = {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER,
+        type: Sequelize.DataTypes.INTEGER,
       },
       nickname: {
         allowNull: false,
         unique: true,
-        type: Sequelize.STRING,
+        type: Sequelize.DataTypes.STRING,
       },
       email: {
         allowNull: false,
         unique: true,
-        type: Sequelize.STRING,
+        type: Sequelize.DataTypes.STRING,
       },
       password: {
         allowNull: false,
-        type: Sequelize.STRING,
+        type: Sequelize.DataTypes.STRING,
       },
       locale: {
         allowNull: true,
-        type: Sequelize.STRING,
+        type: Sequelize.DataTypes.STRING,
       },
       role: {
         allowNull: false,
-        type: Sequelize.STRING,
+        type: Sequelize.DataTypes.STRING,
         validate: {
           isIn: [["admin", "user"]],
         },
       },
       name: {
         allowNull: false,
-        type: Sequelize.STRING,
+        type: Sequelize.DataTypes.STRING,
       },
       bio: {
         allowNull: true,
-        type: Sequelize.TEXT,
+        type: Sequelize.DataTypes.TEXT,
       },
       birth: {
         allowNull: true,
-        type: Sequelize.DATE,
+        type: Sequelize.DataTypes.DATE,
+      },
+      profile_image: {
+        allowNull: true,
+        type: Sequelize.DataTypes.STRING,
+      },
+      profile_banner_image: {
+        allowNull: true,
+        type: Sequelize.DataTypes.STRING,
       },
       created_at: {
         allowNull: false,
-        type: Sequelize.DATE,
+        type: Sequelize.DataTypes.DATE,
       },
       updated_at: {
         allowNull: false,
-        type: Sequelize.DATE,
+        type: Sequelize.DataTypes.DATE,
       },
     });
   },
