@@ -18,7 +18,10 @@ import { followResourceOptions } from "./follow";
 import { genreResourceOptions } from "./genre";
 import { likeResourceOptions } from "./like";
 import { mediaGenreResourceOptions } from "./mediaGenre";
-import { mediaProductResourceOptions } from "./mediaProduct";
+import {
+  mediaProductResourceOptions,
+  mediaProductsResourceFeatures,
+} from "./mediaProduct";
 import { postImageResourceOptions } from "./postImage";
 import { WatchIten } from "../../models/WatchIten";
 import { watchItenResourceOptions } from "./watchIten";
@@ -57,6 +60,7 @@ export const adminJSResources: ResourceWithOptions[] = [
   {
     resource: MediaProduct,
     options: mediaProductResourceOptions,
+    features: mediaProductsResourceFeatures,
   },
   {
     resource: Post,

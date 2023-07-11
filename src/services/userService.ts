@@ -10,17 +10,29 @@ export const userService = {
   },
   show: async (id: number) => {
     const user = await User.findByPk(id, {
-      attributes: ["id", "nickname", "name", "bio"],
+      attributes: [
+        "id",
+        "nickname",
+        "name",
+        "bio",
+        "locale",
+        "birth",
+        ["profile_image", "profileImage"],
+        ["profile_banner_image", "profileBannerImage"],
+      ],
       include: [
         {
           model: User,
           as: "followers",
-          attributes: ["id", "nickname", "bio", "name"],
+          attributes: ["id", "nickname", "name"],
+          through: {
+            attributes: [],
+          },
         },
         {
           model: User,
           as: "following",
-          attributes: ["id", "nickname", "bio", "name"],
+          attributes: ["id", "nickname", "name"],
           through: {
             attributes: [],
           },
@@ -28,5 +40,13 @@ export const userService = {
       ],
     });
     return user;
+  },
+
+  findByEmail: async (email: string) => {
+    const user = await User.findAll({
+      where: { email },
+    });
+
+    return user[0];
   },
 };

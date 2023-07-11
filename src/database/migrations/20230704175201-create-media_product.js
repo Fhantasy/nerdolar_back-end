@@ -23,7 +23,7 @@ module.exports = {
         type: Sequelize.DataTypes.STRING,
       },
       is_episodic: {
-        allowNull: false,
+        allowNull: true,
         type: Sequelize.DataTypes.BOOLEAN,
       },
       launch_date: {
@@ -46,16 +46,16 @@ module.exports = {
         allowNull: true,
         type: Sequelize.DataTypes.DATE,
       },
-      thumb_img: {
-        allowNull: false,
+      thumbnail_img: {
+        allowNull: true,
         type: Sequelize.DataTypes.STRING,
       },
-      banner_img: {
-        allowNull: false,
+      page_banner_img: {
+        allowNull: true,
         type: Sequelize.DataTypes.STRING,
       },
       category_id: {
-        allowNull: false,
+        allowNull: true,
         type: Sequelize.DataTypes.INTEGER,
         references: { model: "categories", key: "id" },
         onUpdate: "CASCADE",
@@ -63,11 +63,11 @@ module.exports = {
       },
       created_at: {
         allowNull: false,
-        type: Sequelize.DATE,
+        type: Sequelize.DataTypes.DATE,
       },
       updated_at: {
         allowNull: false,
-        type: Sequelize.DATE,
+        type: Sequelize.DataTypes.DATE,
       },
     });
   },

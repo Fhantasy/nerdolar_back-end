@@ -46,11 +46,11 @@ module.exports = {
         allowNull: true,
         type: Sequelize.DataTypes.DATE,
       },
-      profile_image: {
+      profile_img: {
         allowNull: true,
         type: Sequelize.DataTypes.STRING,
       },
-      profile_banner_image: {
+      profile_banner_img: {
         allowNull: true,
         type: Sequelize.DataTypes.STRING,
       },

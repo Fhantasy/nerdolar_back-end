@@ -14,19 +14,21 @@ export interface User {
   name: string;
   bio: string;
   birth: Date;
-  profileImage: string;
-  profileBannerImage: string;
+  profileImg: string;
+  profileBannerImg: string;
 }
 
 export interface UserCreationsAttributes
   extends Optional<
     User,
-    "id" | "locale" | "bio" | "birth" | "profileImage" | "profileBannerImage"
+    "id" | "locale" | "bio" | "birth" | "profileImg" | "profileBannerImg"
   > {}
 
 export interface UserInstance
   extends Model<User, UserCreationsAttributes>,
-    User {}
+    User {
+  checkPassword: (password: string, callbackfn: CheckPassword) => void;
+}
 
 export const User = sequelize.define<UserInstance, User>(
   "User",
@@ -74,11 +76,11 @@ export const User = sequelize.define<UserInstance, User>(
       allowNull: true,
       type: DataTypes.DATE,
     },
-    profileImage: {
+    profileImg: {
       allowNull: true,
       type: DataTypes.STRING,
     },
-    profileBannerImage: {
+    profileBannerImg: {
       allowNull: true,
       type: DataTypes.STRING,
     },
@@ -93,6 +95,7 @@ export const User = sequelize.define<UserInstance, User>(
     },
   }
 );
+
 User.prototype.checkPassword = function (
   password: string,
   callbackFunction: CheckPassword

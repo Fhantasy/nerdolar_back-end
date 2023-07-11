@@ -12,8 +12,8 @@ export interface MediaProduct {
   totalEpisodes: number;
   currentEpisode: number;
   releaseDate: Date;
-  thumbImg: string;
-  bannerImg: string;
+  thumbnailImg: string;
+  pageBannerImg: string;
   categoryId: number;
 }
 
@@ -50,7 +50,7 @@ export const MediaProduct = sequelize.define<
     type: DataTypes.STRING,
   },
   isEpisodic: {
-    allowNull: false,
+    allowNull: true,
     type: DataTypes.BOOLEAN,
   },
   launchDate: {
@@ -73,12 +73,12 @@ export const MediaProduct = sequelize.define<
     allowNull: true,
     type: DataTypes.DATE,
   },
-  thumbImg: {
-    allowNull: false,
+  thumbnailImg: {
+    allowNull: true,
     type: DataTypes.STRING,
   },
-  bannerImg: {
-    allowNull: false,
+  pageBannerImg: {
+    allowNull: true,
     type: DataTypes.STRING,
   },
   categoryId: {
@@ -86,6 +86,6 @@ export const MediaProduct = sequelize.define<
     type: DataTypes.INTEGER,
     references: { model: "categories", key: "id" },
     onUpdate: "CASCADE",
-    onDelete: "CASCADE",
+    onDelete: "RESTRICT",
   },
 });

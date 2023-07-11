@@ -3,7 +3,7 @@ import { sequelize } from "../database";
 
 export interface PostImage {
   id: number;
-  imageUrl: string;
+  imgUrl: string;
   postId: number;
 }
 
@@ -23,7 +23,7 @@ export const PostImage = sequelize.define<PostImageInstance, PostImage>(
       allowNull: false,
       type: DataTypes.INTEGER,
     },
-    imageUrl: {
+    imgUrl: {
       allowNull: false,
       type: DataTypes.STRING,
     },

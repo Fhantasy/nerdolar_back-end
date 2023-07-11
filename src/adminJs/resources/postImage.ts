@@ -1,9 +1,11 @@
-import { ResourceOptions } from "adminjs";
+import uploadFileFeature from "@adminjs/upload";
+import { FeatureType, ResourceOptions } from "adminjs";
+import path from "path";
 
 export const postImageResourceOptions: ResourceOptions = {
   navigation: "Administração",
-  editProperties: ["imageUrl"],
-  filterProperties: ["imageUrl", "postId", "createdAt", "updatedAt"],
-  listProperties: ["imageUrl", "postId"],
-  showProperties: ["id", "imageUrl", "postId", "createdAt", "updatedAt"],
+  editProperties: ["imgUrl", "postId"],
+  filterProperties: ["id", "imgUrl", "postId", "createdAt", "updatedAt"],
+  listProperties: ["id", "imgUrl", "postId"],
+  showProperties: ["id", "imgUrl", "postId", "createdAt", "updatedAt"],
 };

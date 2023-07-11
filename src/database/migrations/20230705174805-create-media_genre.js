@@ -3,7 +3,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("media_genre", {
+    await queryInterface.createTable("media_genres", {
       id: {
         primaryKey: true,
         autoIncrement: true,
@@ -36,6 +36,6 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("media_genre");
+    await queryInterface.dropTable("media_genres");
   },
 };

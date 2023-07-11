@@ -1,7 +1,14 @@
-import { ResourceOptions } from "adminjs";
+import uploadFileFeature from "@adminjs/upload";
+import { FeatureType, ResourceOptions } from "adminjs";
+import path from "path";
 
 export const mediaProductResourceOptions: ResourceOptions = {
   navigation: "Produtos de Mídia",
+  properties: {
+    launchDate: {
+      type: "date",
+    },
+  },
   editProperties: [
     "title",
     "sinopsys",
@@ -12,13 +19,13 @@ export const mediaProductResourceOptions: ResourceOptions = {
     "totalEpisodes",
     "currentEpisode",
     "releaseDate",
-    "thumbImg",
-    "bannerImg",
+    "thumbnailImage",
+    "pageBannerImage",
     "categoryId",
   ],
   filterProperties: [
+    "id",
     "title",
-    "sinopsys",
     "status",
     "isEpisodic",
     "launchDate",
@@ -26,8 +33,6 @@ export const mediaProductResourceOptions: ResourceOptions = {
     "totalEpisodes",
     "currentEpisode",
     "releaseDate",
-    "thumbImg",
-    "bannerImg",
     "categoryId",
     "createdAt",
     "updatedAt",
@@ -51,10 +56,47 @@ export const mediaProductResourceOptions: ResourceOptions = {
     "totalEpisodes",
     "currentEpisode",
     "releaseDate",
-    "thumbImg",
-    "bannerImg",
+    "thumbnailImage",
+    "pageBannerImage",
     "categoryId",
     "createdAt",
     "updatedAt",
   ],
 };
+
+export const mediaProductsResourceFeatures: FeatureType[] = [
+  uploadFileFeature({
+    provider: {
+      local: {
+        opts: {},
+        bucket: path.join(__dirname, "../../public"),
+      },
+    },
+    properties: {
+      key: "thumbnailImg",
+      file: "thumbnailImage",
+      filePath: "thumbnailImgPath",
+      filesToDelete: "thumbnailImgToDelete",
+    },
+    uploadPath: (record, filename) => {
+      return `media-products/${record.get("id")}/${filename}`;
+    },
+  }),
+  uploadFileFeature({
+    provider: {
+      local: {
+        opts: {},
+        bucket: path.join(__dirname, "../../public"),
+      },
+    },
+    properties: {
+      key: "pageBannerImg",
+      file: "pageBannerImage",
+      filePath: "pageBannerImgPath",
+      filesToDelete: "pageBannerImgToDelete",
+    },
+    uploadPath: (record, filename) => {
+      return `media-products/${record.get("id")}/${filename}`;
+    },
+  }),
+];

@@ -10,8 +10,8 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DataTypes.INTEGER,
       },
-      image_url: {
-        allowNull: false,
+      img_url: {
+        allowNull: true,
         type: Sequelize.DataTypes.STRING,
       },
       post_id: {
