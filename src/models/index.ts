@@ -10,16 +10,16 @@ import { PostImage } from "./PostImage";
 import { User } from "./User";
 import { WatchIten } from "./WatchIten";
 
-MediaProduct.belongsTo(Category);
+MediaProduct.belongsTo(Category, { as: "category" });
 Category.hasMany(MediaProduct);
 
 MediaProduct.belongsToMany(Genre, {
   through: MediaGenre,
-  as: "mediaProducts",
+  as: "genres",
 });
 Genre.belongsToMany(MediaProduct, {
   through: MediaGenre,
-  as: "genres",
+  as: "mediaProducts",
 });
 
 Post.belongsTo(MediaProduct);
