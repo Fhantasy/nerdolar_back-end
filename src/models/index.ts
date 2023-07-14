@@ -48,6 +48,9 @@ MediaProduct.belongsToMany(User, { through: WatchIten });
 
 User.hasMany(WatchIten, { as: "watchIten", foreignKey: "user_id" });
 
+Follow.belongsTo(User, { foreignKey: "user_followed_id", as: "follow" });
+Follow.belongsTo(User, { foreignKey: "user_following_id", as: "follower" });
+
 User.belongsToMany(User, {
   through: Follow,
   foreignKey: "user_following_id",
