@@ -5,6 +5,7 @@ import { AuthController } from "./controllers/authController";
 import { EnsureAuth } from "./middlewares/auth";
 import { MediaProductController } from "./controllers/mediaProductController";
 import { FollowController } from "./controllers/followContoller";
+import { PostController } from "./controllers/postController";
 
 const router = express.Router();
 
@@ -41,5 +42,12 @@ router.post("/follow", EnsureAuth, FollowController.follow);
 router.delete("/follow", EnsureAuth, FollowController.unfollow);
 router.get("/followers", EnsureAuth, FollowController.getFollowers);
 router.get("/followings", EnsureAuth, FollowController.getFollowings);
+
+router.post("/posts", EnsureAuth, PostController.create);
+router.delete("/posts/:id", EnsureAuth, PostController.delete);
+router.get("/posts/:id", EnsureAuth, PostController.show);
+router.get("/posts/user/:id", EnsureAuth, PostController.allFromUser);
+router.post("/posts/search", EnsureAuth, PostController.search);
+router.get("/feed", EnsureAuth, PostController.feed);
 
 export { router };

@@ -1,5 +1,6 @@
 import { DataTypes, Optional, Model } from "sequelize";
 import { sequelize } from "../database";
+import { UserInstance } from "./User";
 
 export interface Follow {
   id: number;
@@ -11,7 +12,9 @@ export interface FollowCreationsAttributes extends Optional<Follow, "id"> {}
 
 export interface FollowInstance
   extends Model<Follow, FollowCreationsAttributes>,
-    Follow {}
+    Follow {
+  follow?: UserInstance;
+}
 
 export const Follow = sequelize.define<FollowInstance, Follow>("Follow", {
   id: {
