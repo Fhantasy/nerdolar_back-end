@@ -35,18 +35,22 @@ Post.belongsToMany(User, { through: Comment });
 User.belongsToMany(Post, { through: Comment });
 
 Post.hasMany(Comment, { as: "comments", foreignKey: "post_id" });
-User.hasMany(Comment, { as: "comments", foreignKey: "user_id" });
+Comment.belongsTo(User, { as: "user", foreignKey: "user_id" });
 
 Post.belongsToMany(User, { through: Like });
 User.belongsToMany(Post, { through: Like });
 
-Post.belongsToMany(User, { through: Like });
-User.belongsToMany(Post, { through: Like });
+Like.belongsTo(Post);
+Post.hasMany(Like);
 
 User.belongsToMany(MediaProduct, { through: WatchIten });
 MediaProduct.belongsToMany(User, { through: WatchIten });
 
 User.hasMany(WatchIten, { as: "watchIten", foreignKey: "user_id" });
+WatchIten.belongsTo(MediaProduct, {
+  as: "mediaProduct",
+  foreignKey: "media_product_id",
+});
 
 Follow.belongsTo(User, { foreignKey: "user_followed_id", as: "follow" });
 Follow.belongsTo(User, { foreignKey: "user_following_id", as: "follower" });

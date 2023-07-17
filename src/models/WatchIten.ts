@@ -10,7 +10,7 @@ export interface WatchIten {
 }
 
 export interface WatchItenCreationsAttributes
-  extends Optional<WatchIten, "id"> {}
+  extends Optional<WatchIten, "id" | "status" | "currentEpisode"> {}
 
 export interface WatchItenInstance
   extends Model<WatchIten, WatchItenCreationsAttributes>,

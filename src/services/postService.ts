@@ -1,8 +1,16 @@
-import { Op } from "sequelize";
-import { Category, MediaProduct, PostImage, User } from "../models";
+import { Op, Sequelize } from "sequelize";
+import {
+  Category,
+  Comment,
+  Like,
+  MediaProduct,
+  PostImage,
+  User,
+} from "../models";
 import { Post, PostCreationsAttributes, PostInstance } from "../models/Post";
 import { followService } from "./followService";
 import { FollowInstance } from "../models/Follow";
+import sequelize from "sequelize";
 
 export const postService = {
   create: async (params: PostCreationsAttributes, urlImgs?: string[]) => {
@@ -20,9 +28,15 @@ export const postService = {
 
   getOne: async (id: number) => {
     const post = await Post.findByPk(id, {
-      attributes: ["id", "message", ["created_at", "createdAt"]],
+      attributes: [
+        "id",
+        "message",
+        ["created_at", "createdAt"],
+        [Sequelize.fn("count", Sequelize.col(`Likes.id`)), "likes"],
+      ],
       include: [
         { model: PostImage, attributes: ["id", "imgUrl"] },
+        { model: Like, attributes: [] },
         {
           model: User,
           attributes: ["id", "nickname", "name", ["profile_img", "profileImg"]],
@@ -37,6 +51,32 @@ export const postService = {
           ],
           include: [{ model: Category, as: "category", attributes: ["name"] }],
         },
+        {
+          model: Comment,
+          as: "comments",
+          attributes: ["id", "message", ["created_at", "createdAt"]],
+          include: [
+            {
+              model: User,
+              as: "user",
+              attributes: [
+                "id",
+                "nickname",
+                "name",
+                ["profile_img", "profileImg"],
+              ],
+            },
+          ],
+        },
+      ],
+      group: [
+        "Post.id",
+        "PostImages.id",
+        "User.id",
+        "MediaProduct.id",
+        "MediaProduct->category.id",
+        "comments.id",
+        "comments->user.id",
       ],
     });
 

@@ -6,6 +6,9 @@ import { EnsureAuth } from "./middlewares/auth";
 import { MediaProductController } from "./controllers/mediaProductController";
 import { FollowController } from "./controllers/followContoller";
 import { PostController } from "./controllers/postController";
+import { CommentController } from "./controllers/commentController";
+import { LikeController } from "./controllers/likeController";
+import { WatchItenController } from "./controllers/watchItenController";
 
 const router = express.Router();
 
@@ -49,5 +52,17 @@ router.get("/posts/:id", EnsureAuth, PostController.show);
 router.get("/posts/user/:id", EnsureAuth, PostController.allFromUser);
 router.post("/posts/search", EnsureAuth, PostController.search);
 router.get("/feed", EnsureAuth, PostController.feed);
+
+router.post("/comment", EnsureAuth, CommentController.create);
+router.delete("/comment/:id", EnsureAuth, CommentController.delete);
+
+router.post("/like", EnsureAuth, LikeController.create);
+router.delete("/like", EnsureAuth, LikeController.delete);
+
+router.post("/watchIten", EnsureAuth, WatchItenController.create);
+router.delete("/watchIten/:id", EnsureAuth, WatchItenController.delete);
+router.put("/watchIten", EnsureAuth, WatchItenController.update);
+router.get("/watchItens", EnsureAuth, WatchItenController.getAllFromUser);
+router.get("/watchIten/:id", EnsureAuth, WatchItenController.getOne);
 
 export { router };
