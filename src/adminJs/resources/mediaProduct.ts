@@ -69,7 +69,7 @@ export const mediaProductsResourceFeatures: FeatureType[] = [
     provider: {
       local: {
         opts: {},
-        bucket: path.join(__dirname, "../../public"),
+        bucket: path.join(__dirname, "../../../public"),
       },
     },
     properties: {
@@ -86,7 +86,7 @@ export const mediaProductsResourceFeatures: FeatureType[] = [
     provider: {
       local: {
         opts: {},
-        bucket: path.join(__dirname, "../../public"),
+        bucket: path.join(__dirname, "../../../public"),
       },
     },
     properties: {

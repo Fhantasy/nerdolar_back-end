@@ -13,6 +13,7 @@ export interface PostCreationsAttributes extends Optional<Post, "id"> {}
 export interface PostInstance
   extends Model<Post, PostCreationsAttributes>,
     Post {
+  isLiked?: boolean;
   createdAt: Date;
 }
 

@@ -1,13 +1,32 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { AuthorizatedRequest } from "../middlewares/auth";
 import { postService } from "../services/postService";
 import { getPaginationParams } from "../helpers/getPaginationParams";
+import fs from "fs";
+import { upload } from "../services/upload";
+
+const uploadPostImage = upload("post-images").array("images");
+
+export async function uploadPostImageMiddleware(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  uploadPostImage(req, res, (error) => {
+    if (error) {
+      return res.status(400).json({ message: error.message });
+    }
+    next();
+  });
+}
 
 export const PostController = {
   //POST /posts
   create: async (req: AuthorizatedRequest, res: Response) => {
     const user = req.user!;
-    const { message, mediaProductId, urlImgs } = req.body;
+    const { message, mediaProductId } = req.body;
+    const images = req.files as Express.Multer.File[];
+
     try {
       await postService.create(
         {
@@ -15,11 +34,16 @@ export const PostController = {
           userId: user.id,
           mediaProductId,
         },
-        urlImgs
+        images
       );
 
-      res.status(200).send();
+      res.status(201).send();
     } catch (error) {
+      if (images) {
+        images.forEach((image) => {
+          fs.unlink(image.path, () => {});
+        });
+      }
       if (error instanceof Error) {
         return res.status(400).json({ message: error.message });
       }
@@ -33,8 +57,8 @@ export const PostController = {
     try {
       const post = await postService.getOne(Number(id));
 
-      if (!post) res.status(404).json({ message: "Post not found" });
-      res.status(200).json(post);
+      if (!post) return res.status(404).json({ message: "Post not found" });
+      return res.status(200).json(post);
     } catch (error) {
       if (error instanceof Error) {
         return res.status(400).json({ message: error.message });
@@ -78,8 +102,9 @@ export const PostController = {
   //GET /feed
   feed: async (req: AuthorizatedRequest, res: Response) => {
     const user = req.user!;
+    const [page, perPage] = getPaginationParams(req.query);
     try {
-      const posts = await postService.feed(user.id);
+      const posts = await postService.feed(user.id, page, perPage);
 
       res.status(200).json(posts);
     } catch (error) {

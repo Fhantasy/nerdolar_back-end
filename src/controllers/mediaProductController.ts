@@ -22,10 +22,13 @@ export const MediaProductController = {
 
   //GET /media-products/search/
   search: async (req: Request, res: Response) => {
-    const { title } = req.body;
+    const { title } = req.query;
     const [page, perPage] = getPaginationParams(req.query);
 
     try {
+      if (typeof title !== "string") {
+        throw new Error("Query title must be of type string");
+      }
       const mediaProducts = await mediaProductService.findByTitle(
         title,
         page,

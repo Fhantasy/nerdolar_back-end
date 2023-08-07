@@ -1,14 +1,18 @@
-import express from "express";
+import express, { request, response } from "express";
 import { UserController } from "./controllers/userController";
 import { CategoryController } from "./controllers/categoryController";
 import { AuthController } from "./controllers/authController";
 import { EnsureAuth } from "./middlewares/auth";
 import { MediaProductController } from "./controllers/mediaProductController";
 import { FollowController } from "./controllers/followContoller";
-import { PostController } from "./controllers/postController";
+import {
+  PostController,
+  uploadPostImageMiddleware,
+} from "./controllers/postController";
 import { CommentController } from "./controllers/commentController";
 import { LikeController } from "./controllers/likeController";
 import { WatchItenController } from "./controllers/watchItenController";
+import ExpressFormidable from "express-formidable";
 
 const router = express.Router();
 
@@ -46,7 +50,12 @@ router.delete("/follow", EnsureAuth, FollowController.unfollow);
 router.get("/followers", EnsureAuth, FollowController.getFollowers);
 router.get("/followings", EnsureAuth, FollowController.getFollowings);
 
-router.post("/posts", EnsureAuth, PostController.create);
+router.post(
+  "/posts",
+  EnsureAuth,
+  uploadPostImageMiddleware,
+  PostController.create
+);
 router.delete("/posts/:id", EnsureAuth, PostController.delete);
 router.get("/posts/:id", EnsureAuth, PostController.show);
 router.get("/posts/user/:id", EnsureAuth, PostController.allFromUser);

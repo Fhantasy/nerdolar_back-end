@@ -7,8 +7,12 @@ export const UserController = {
   //GET /users/:nickname
   show: async (req: Request, res: Response) => {
     const { nickname } = req.params;
+
     try {
       const user = await userService.show(nickname);
+
+      if (!user) throw new Error("User not found!");
+
       return res.status(200).json(user);
     } catch (error) {
       if (error instanceof Error) {
@@ -40,7 +44,7 @@ export const UserController = {
       return res.status(200).json(user);
     } catch (error) {
       if (error instanceof Error) {
-        return res.status(400).json({ message: error.message });
+        return res.status(401).json({ message: error.message });
       }
       return error;
     }

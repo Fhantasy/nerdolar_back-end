@@ -9,21 +9,25 @@ import {
 } from "../models";
 import { Post, PostCreationsAttributes, PostInstance } from "../models/Post";
 import { followService } from "./followService";
-import { FollowInstance } from "../models/Follow";
-import sequelize from "sequelize";
+import { likeService } from "./likeService";
 
 export const postService = {
-  create: async (params: PostCreationsAttributes, urlImgs?: string[]) => {
+  create: async (
+    params: PostCreationsAttributes,
+    images: Express.Multer.File[]
+  ) => {
     const post = await Post.create(params);
 
-    if (!urlImgs) return;
+    if (!images) return;
 
-    urlImgs.forEach(async (imgUrl) => {
+    images.forEach(async (image) => {
       await PostImage.create({
-        imgUrl,
+        imgUrl: image.path,
         postId: post.id,
       });
     });
+
+    return post;
   },
 
   getOne: async (id: number) => {
@@ -110,8 +114,11 @@ export const postService = {
       ],
       limit: perPage,
       offset,
+      order: [["created_at", "DESC"]],
       distinct: true,
     });
+
+    await likeService.includeIsLiked(rows, userId);
 
     return {
       posts: rows,
@@ -161,8 +168,11 @@ export const postService = {
     };
   },
 
-  feed: async (userId: number) => {
+  feed: async (userId: number, page: number, perPage: number) => {
+    const offset = (page - 1) * perPage;
+
     const followingUsers = await followService.getFollowings(userId, 1, 999999);
+
     let postsPromises = followingUsers.folowings.map(async (followingUser) => {
       const posts = await postService.getAllFromUser(
         followingUser.follow!.id!,
@@ -181,7 +191,9 @@ export const postService = {
     });
     posts.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
-    return posts;
+    const postsPaginated = posts.splice(offset, perPage);
+
+    return postsPaginated;
   },
 
   delete: async (id: number) => {

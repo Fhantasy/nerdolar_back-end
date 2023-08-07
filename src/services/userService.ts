@@ -3,6 +3,18 @@ import { User, UserCreationsAttributes } from "../models/User";
 
 export const userService = {
   create: async (params: UserCreationsAttributes) => {
+    const nicknameAlreadyExists = await userService.findByNickname(
+      params.nickname
+    );
+    const emailAlreadyExists = await userService.findByEmail(params.email);
+
+    if (nicknameAlreadyExists) {
+      throw new Error("Apelido já existe");
+    }
+    if (emailAlreadyExists) {
+      throw new Error("Email já existe");
+    }
+
     const user = await User.create(params);
     return user;
   },
@@ -144,7 +156,7 @@ export const userService = {
     const user = await User.findOne({
       where: { email },
     });
-
+    console.log(user);
     return user;
   },
 

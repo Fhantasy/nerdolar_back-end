@@ -59,7 +59,7 @@ export const userResourceFeatures: FeatureType[] = [
     provider: {
       local: {
         opts: {},
-        bucket: path.join(__dirname, "../../public"),
+        bucket: path.join(__dirname, "../../../public"),
       },
     },
     properties: {
@@ -74,7 +74,7 @@ export const userResourceFeatures: FeatureType[] = [
     provider: {
       local: {
         opts: {},
-        bucket: path.join(__dirname, "../../public"),
+        bucket: path.join(__dirname, "../../../public"),
       },
     },
     properties: {

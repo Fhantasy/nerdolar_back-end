@@ -58,4 +58,12 @@ export const mediaProductService = {
       total: count,
     };
   },
+
+  updateStatus: async () => {
+    const mediasOngoing = await MediaProduct.findAll({
+      where: { status: "Em andamento" },
+    });
+
+    mediasOngoing.forEach;
+  },
 };

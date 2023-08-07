@@ -4,12 +4,15 @@ dotenv.config();
 import express from "express";
 import { router } from "./routes";
 import { adminJs, adminJsRouter } from "./adminJs";
+import cors from "cors";
 
 const app = express();
 
+app.use(cors());
+
 app.use(express.json());
 
-app.use(express.static("public"));
+app.use("/public", express.static("public"));
 
 app.use(adminJs.options.rootPath, adminJsRouter);
 
