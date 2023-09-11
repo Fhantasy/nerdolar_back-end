@@ -14,6 +14,10 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DataTypes.TEXT,
       },
+      image_urls: {
+        allowNull: true,
+        type: Sequelize.DataTypes.ARRAY(Sequelize.DataTypes.STRING),
+      },
       user_id: {
         allowNull: false,
         type: Sequelize.DataTypes.INTEGER,

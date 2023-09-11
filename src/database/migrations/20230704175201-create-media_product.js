@@ -21,6 +21,9 @@ module.exports = {
       status: {
         allowNull: false,
         type: Sequelize.DataTypes.STRING,
+        validate: {
+          isIn: [["ongoing", "complete"]],
+        },
       },
       is_episodic: {
         allowNull: true,
@@ -42,9 +45,9 @@ module.exports = {
         allowNull: true,
         type: Sequelize.DataTypes.FLOAT,
       },
-      release_date: {
+      release_dates: {
         allowNull: true,
-        type: Sequelize.DataTypes.DATE,
+        type: Sequelize.DataTypes.ARRAY(Sequelize.DataTypes.DATE),
       },
       thumbnail_img: {
         allowNull: true,

@@ -23,10 +23,10 @@ export const LikeController = {
   //DELETE /like
   delete: async (req: AuthorizatedRequest, res: Response) => {
     const user = req.user!;
-    const { postId } = req.body;
+    const { id } = req.params;
 
     try {
-      await likeService.delete(user.id, postId);
+      await likeService.delete(user.id, Number(id));
 
       res.status(200).send();
     } catch (error) {

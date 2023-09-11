@@ -23,11 +23,10 @@ export const FollowController = {
 
   //DELETE /follow
   unfollow: async (req: AuthorizatedRequest, res: Response) => {
-    const { userToUnfollowId } = req.body;
+    const { userId } = req.params;
     const user = req.user!;
-
     try {
-      await followService.unfollow(user.id, userToUnfollowId);
+      await followService.unfollow(user.id, Number(userId));
 
       res.status(200).send();
     } catch (error) {

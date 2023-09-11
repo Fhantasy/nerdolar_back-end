@@ -1,7 +1,9 @@
 {
   "main": "index.js",
   "scripts": {
-    "dev": "ts-node-dev --transpile-only --ignore-watch node_modules src/server.ts"
+    "dev": "ts-node-dev --transpile-only --ignore-watch node_modules src/server.ts",
+    "build": "npm install && npx tsc",
+    "start": "npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all && node ./dist/server.js"
   },
   "dependencies": {
     "@adminjs/express": "^5.1.0",

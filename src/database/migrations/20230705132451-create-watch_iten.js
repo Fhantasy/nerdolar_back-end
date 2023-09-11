@@ -3,7 +3,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("watch_itens", {
+    await queryInterface.createTable("watch_items", {
       id: {
         primaryKey: true,
         autoIncrement: true,
@@ -12,8 +12,11 @@ module.exports = {
       },
       status: {
         allowNull: false,
-        defaultValue: "Assistindo",
+        defaultValue: "ongoing",
         type: Sequelize.DataTypes.STRING,
+        validate: {
+          isIn: [["ongoing", "complete"]],
+        },
       },
       current_episode: {
         allowNull: false,
@@ -34,6 +37,13 @@ module.exports = {
         onUpdate: "CASCADE",
         onDelete: "CASCADE",
       },
+      category_id: {
+        allowNull: false,
+        type: Sequelize.DataTypes.INTEGER,
+        references: { model: "categories", key: "id" },
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
+      },
       created_at: {
         allowNull: false,
         type: Sequelize.DataTypes.DATE,
@@ -46,6 +56,6 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("watch_itens");
+    await queryInterface.dropTable("watch_items");
   },
 };

@@ -1,6 +1,7 @@
 import { Response } from "express";
 import { AuthorizatedRequest } from "../middlewares/auth";
 import { commentService } from "../services/commentService";
+import { getPaginationParams } from "../helpers/getPaginationParams";
 
 export const CommentController = {
   //POST /comment
@@ -11,7 +12,28 @@ export const CommentController = {
     try {
       await commentService.create({ message, userId: user.id, postId });
 
-      res.status(200).send();
+      res.status(201).send();
+    } catch (error) {
+      if (error instanceof Error) {
+        return res.status(400).json({ message: error.message });
+      }
+      return error;
+    }
+  },
+
+  //GET /comments/:postId
+  getAllFromPost: async (req: AuthorizatedRequest, res: Response) => {
+    const { postId } = req.params;
+    const [page, perPage] = getPaginationParams(req.query);
+
+    try {
+      const comments = await commentService.getAllFromPost(
+        Number(postId),
+        page,
+        perPage
+      );
+
+      return res.status(200).json(comments);
     } catch (error) {
       if (error instanceof Error) {
         return res.status(400).json({ message: error.message });

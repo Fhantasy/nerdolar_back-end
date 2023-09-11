@@ -5,13 +5,13 @@ export interface MediaProduct {
   id: number;
   title: string;
   sinopsys: string;
-  status: string;
+  status: "ongoing" | "complete";
   isEpisodic: boolean;
   launchDate: Date;
   endDate: Date;
   totalEpisodes: number;
   currentEpisode: number;
-  releaseDate: Date;
+  releaseDates: Date[];
   thumbnailImg: string;
   pageBannerImg: string;
   categoryId: number;
@@ -20,7 +20,7 @@ export interface MediaProduct {
 export interface MediaProductCreationsAttributes
   extends Optional<
     MediaProduct,
-    "id" | "endDate" | "totalEpisodes" | "currentEpisode" | "releaseDate"
+    "id" | "endDate" | "totalEpisodes" | "currentEpisode" | "releaseDates"
   > {}
 
 export interface MediaProductInstance
@@ -48,6 +48,9 @@ export const MediaProduct = sequelize.define<
   status: {
     allowNull: false,
     type: DataTypes.STRING,
+    validate: {
+      isIn: [["ongoing", "complete"]],
+    },
   },
   isEpisodic: {
     allowNull: true,
@@ -69,9 +72,9 @@ export const MediaProduct = sequelize.define<
     allowNull: true,
     type: DataTypes.FLOAT,
   },
-  releaseDate: {
+  releaseDates: {
     allowNull: true,
-    type: DataTypes.DATE,
+    type: DataTypes.ARRAY(DataTypes.DATE),
   },
   thumbnailImg: {
     allowNull: true,

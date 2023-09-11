@@ -34,7 +34,7 @@ export const PostController = {
           userId: user.id,
           mediaProductId,
         },
-        images
+        images ? images : undefined
       );
 
       res.status(201).send();
@@ -53,9 +53,10 @@ export const PostController = {
 
   //GET /posts/:id
   show: async (req: AuthorizatedRequest, res: Response) => {
+    const user = req.user!;
     const { id } = req.params;
     try {
-      const post = await postService.getOne(Number(id));
+      const post = await postService.getOne(Number(id), user.id);
 
       if (!post) return res.status(404).json({ message: "Post not found" });
       return res.status(200).json(post);
@@ -69,10 +70,39 @@ export const PostController = {
 
   //GET /posts/user/:id
   allFromUser: async (req: AuthorizatedRequest, res: Response) => {
+    const user = req.user!;
     const { id } = req.params;
     const [page, perPage] = getPaginationParams(req.query);
     try {
-      const posts = await postService.getAllFromUser(Number(id), page, perPage);
+      const posts = await postService.getAllFromUser(
+        Number(id),
+        user.id,
+        page,
+        perPage
+      );
+
+      console.log(posts);
+      res.status(200).json(posts);
+    } catch (error) {
+      if (error instanceof Error) {
+        return res.status(400).json({ message: error.message });
+      }
+      return error;
+    }
+  },
+
+  //GET /posts/media-product/:id
+  allFromMedia: async (req: AuthorizatedRequest, res: Response) => {
+    const user = req.user!;
+    const { id } = req.params;
+    const [page, perPage] = getPaginationParams(req.query);
+    try {
+      const posts = await postService.getAllFromMedia(
+        user.id,
+        Number(id),
+        page,
+        perPage
+      );
 
       res.status(200).json(posts);
     } catch (error) {
@@ -84,13 +114,21 @@ export const PostController = {
   },
 
   //GET /posts/search
-  search: async (req: Request, res: Response) => {
-    const { term } = req.body;
+  search: async (req: AuthorizatedRequest, res: Response) => {
+    const user = req.user!;
+    const { name } = req.query;
     const [page, perPage] = getPaginationParams(req.query);
     try {
-      const posts = await postService.search(term, page, perPage);
+      if (typeof name === "string") {
+        const posts = await postService.findByMessage(
+          name,
+          user.id,
+          page,
+          perPage
+        );
 
-      res.status(200).json(posts);
+        res.status(200).json(posts);
+      }
     } catch (error) {
       if (error instanceof Error) {
         return res.status(400).json({ message: error.message });

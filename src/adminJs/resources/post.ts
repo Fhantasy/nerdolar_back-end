@@ -2,7 +2,7 @@ import { ResourceOptions } from "adminjs";
 
 export const postResourceOptions: ResourceOptions = {
   navigation: "Administração",
-  editProperties: ["message", "userId", "mediaProductId"],
+  editProperties: ["message", "userId", "mediaProductId", "imageUrls"],
   filterProperties: [
     "message",
     "userId",
@@ -10,10 +10,11 @@ export const postResourceOptions: ResourceOptions = {
     "createdAt",
     "updatedAt",
   ],
-  listProperties: ["message", "userId", "mediaProductId"],
+  listProperties: ["message", "userId", "imageUrls", "mediaProductId"],
   showProperties: [
     "id",
     "message",
+    "imageUrls",
     "userId",
     "mediaProductId",
     "createdAt",

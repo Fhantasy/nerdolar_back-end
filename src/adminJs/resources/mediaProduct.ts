@@ -8,6 +8,12 @@ export const mediaProductResourceOptions: ResourceOptions = {
     launchDate: {
       type: "date",
     },
+    status: {
+      availableValues: [
+        { value: "ongoing", label: "Em Andamento" },
+        { value: "complete", label: "Completo" },
+      ],
+    },
   },
   editProperties: [
     "title",
@@ -18,7 +24,7 @@ export const mediaProductResourceOptions: ResourceOptions = {
     "endDate",
     "totalEpisodes",
     "currentEpisode",
-    "releaseDate",
+    "releaseDates",
     "thumbnailImage",
     "pageBannerImage",
     "categoryId",
@@ -32,7 +38,7 @@ export const mediaProductResourceOptions: ResourceOptions = {
     "endDate",
     "totalEpisodes",
     "currentEpisode",
-    "releaseDate",
+    "releaseDates",
     "categoryId",
     "createdAt",
     "updatedAt",
@@ -55,7 +61,7 @@ export const mediaProductResourceOptions: ResourceOptions = {
     "endDate",
     "totalEpisodes",
     "currentEpisode",
-    "releaseDate",
+    "releaseDates",
     "thumbnailImage",
     "pageBannerImage",
     "categoryId",

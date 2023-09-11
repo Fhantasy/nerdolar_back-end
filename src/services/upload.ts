@@ -17,7 +17,7 @@ export function upload(folder: string) {
         );
       },
     }),
-    limits: { fileSize: 20971520 },
+    limits: { fileSize: 5 * 1048576 },
     fileFilter(req, file, cb) {
       if (
         file.mimetype === "image/jpg" ||

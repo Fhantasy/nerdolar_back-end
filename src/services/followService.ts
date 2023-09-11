@@ -2,7 +2,6 @@ import { Follow, User } from "../models";
 
 export const followService = {
   follow: async (userFollowingId: number, userFollowedId: number) => {
-    console.log(userFollowingId, userFollowedId);
     await Follow.create({
       userFollowingId,
       userFollowedId,
@@ -36,7 +35,7 @@ export const followService = {
     });
 
     return {
-      folowers: rows,
+      followers: rows,
       page,
       perPage,
       total: count,
@@ -61,7 +60,7 @@ export const followService = {
     });
 
     return {
-      folowings: rows,
+      followings: rows,
       page,
       perPage,
       total: count,

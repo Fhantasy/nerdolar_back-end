@@ -5,6 +5,9 @@ import path from "path";
 export const userResourceOptions: ResourceOptions = {
   navigation: "Administração",
   properties: {
+    birth: {
+      type: "date",
+    },
     role: {
       availableValues: [
         { value: "admin", label: "Administrador" },
@@ -59,7 +62,7 @@ export const userResourceFeatures: FeatureType[] = [
     provider: {
       local: {
         opts: {},
-        bucket: path.join(__dirname, "../../../public"),
+        bucket: path.join(__dirname, "../../.."),
       },
     },
     properties: {
@@ -68,13 +71,14 @@ export const userResourceFeatures: FeatureType[] = [
       filePath: "profileImgPath",
       filesToDelete: "profileImgToDelete",
     },
-    uploadPath: (record, filename) => `users/${record.get("id")}/${filename}`,
+    uploadPath: (record, filename) =>
+      `public/users/${record.get("id")}/${filename}`,
   }),
   uploadFileFeature({
     provider: {
       local: {
         opts: {},
-        bucket: path.join(__dirname, "../../../public"),
+        bucket: path.join(__dirname, "../../.."),
       },
     },
     properties: {
@@ -83,6 +87,7 @@ export const userResourceFeatures: FeatureType[] = [
       filePath: "profileBannerImgPath",
       filesToDelete: "profileBannerImgToDelete",
     },
-    uploadPath: (record, filename) => `users/${record.get("id")}/${filename}`,
+    uploadPath: (record, filename) =>
+      `public/users/${record.get("id")}/${filename}`,
   }),
 ];

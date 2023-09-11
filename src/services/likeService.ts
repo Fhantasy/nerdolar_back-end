@@ -15,18 +15,4 @@ export const likeService = {
       },
     });
   },
-
-  includeIsLiked: async (posts: PostInstance[], userId: number) => {
-    posts.forEach(async (post) => {
-      const isLiked = await Like.findOne({
-        where: { userId, postId: post.id },
-      });
-
-      if (isLiked) {
-        post.isLiked = true;
-      } else {
-        post.isLiked = false;
-      }
-    });
-  },
 };

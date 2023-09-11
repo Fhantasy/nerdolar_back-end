@@ -1,13 +1,20 @@
 import { ResourceOptions } from "adminjs";
 
-export const watchItenResourceOptions: ResourceOptions = {
+export const watchItemResourceOptions: ResourceOptions = {
   navigation: "Administração",
-  editProperties: ["status", "currentEpisode", "userId", "mediaProductId"],
+  editProperties: [
+    "status",
+    "currentEpisode",
+    "userId",
+    "mediaProductId",
+    "categoryId",
+  ],
   filterProperties: [
     "status",
     "currentEpisode",
     "userId",
     "mediaProductId",
+    "categoryId",
     "createdAt",
     "updatedAt",
   ],

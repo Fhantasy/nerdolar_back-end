@@ -1,15 +1,36 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { userService } from "../services/userService";
 import { AuthorizatedRequest } from "../middlewares/auth";
 import { getPaginationParams } from "../helpers/getPaginationParams";
+import { upload } from "../services/upload";
+import fs from "fs";
+
+const uploadProfileImages = upload("users").fields([
+  { name: "profileImg", maxCount: 1 },
+  { name: "profileBannerImg", maxCount: 1 },
+]);
+
+export async function uploadProfileImagesMiddleware(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  uploadProfileImages(req, res, (error) => {
+    if (error) {
+      return res.status(400).json({ message: error.message });
+    }
+    next();
+  });
+}
 
 export const UserController = {
   //GET /users/:nickname
-  show: async (req: Request, res: Response) => {
+  show: async (req: AuthorizatedRequest, res: Response) => {
+    const currentUser = req.user!;
     const { nickname } = req.params;
 
     try {
-      const user = await userService.show(nickname);
+      const user = await userService.show(nickname, currentUser.id);
 
       if (!user) throw new Error("User not found!");
 
@@ -24,10 +45,13 @@ export const UserController = {
 
   //GET /users/search
   search: async (req: Request, res: Response) => {
-    const { name } = req.body;
+    const { name } = req.query;
     const [page, perPage] = getPaginationParams(req.query);
     try {
-      const user = await userService.search(name, page, perPage);
+      if (typeof name !== "string") {
+        throw new Error("Query title must be of type string");
+      }
+      const user = await userService.findByNameOrNickname(name, page, perPage);
       return res.status(200).json(user);
     } catch (error) {
       if (error instanceof Error) {
@@ -53,19 +77,40 @@ export const UserController = {
   //PUT /users/current/profile
   profileUpdate: async (req: AuthorizatedRequest, res: Response) => {
     const user = req.user!;
-    const { name, bio, birth, locale, profileImg, profileBannerImg } = req.body;
+    const { name, bio, birth, locale } = req.body;
+    const images = req.files as { [fieldname: string]: Express.Multer.File[] };
+    const profileImg = images.profileImg?.[0].path;
+    const profileBannerImg = images.profileBannerImg?.[0].path;
+
+    let params: {
+      name: string;
+      bio: string;
+      locale: string;
+      birth?: Date;
+      profileImg?: string;
+      profileBannerImg?: string;
+    } = { name, bio, locale };
+
+    if (profileImg) {
+      params.profileImg = profileImg;
+    }
+    if (profileBannerImg) {
+      params.profileBannerImg = profileBannerImg;
+    }
+    if (birth) {
+      params.birth = birth;
+    }
 
     try {
-      await userService.profileUpdate(user.id, {
-        name,
-        bio,
-        locale,
-        birth,
-        profileImg,
-        profileBannerImg,
-      });
-      res.status(200).send();
+      await userService.profileUpdate(user, params);
+      res.status(204).send();
     } catch (error) {
+      if (profileImg) {
+        fs.unlink(profileImg, () => {});
+      }
+      if (profileBannerImg) {
+        fs.unlink(profileBannerImg, () => {});
+      }
       if (error instanceof Error) {
         return res.status(400).json({ message: error.message });
       }
@@ -83,7 +128,7 @@ export const UserController = {
         nickname,
         email,
       });
-      res.status(200).send();
+      res.status(204).send();
     } catch (error) {
       if (error instanceof Error) {
         return res.status(400).json({ message: error.message });

@@ -5,6 +5,7 @@ import express from "express";
 import { router } from "./routes";
 import { adminJs, adminJsRouter } from "./adminJs";
 import cors from "cors";
+import { mediaProductService } from "./services/mediaProductService";
 
 const app = express();
 
@@ -21,3 +22,7 @@ app.use(router);
 app.listen(3000, () => {
   console.log("Conectado");
 });
+
+setInterval(() => {
+  mediaProductService.updateStatus();
+}, 60 * 1000);

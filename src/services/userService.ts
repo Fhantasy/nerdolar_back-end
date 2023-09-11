@@ -1,5 +1,7 @@
-import { Op, where } from "sequelize";
-import { User, UserCreationsAttributes } from "../models/User";
+import { Op, Sequelize } from "sequelize";
+import { User, UserCreationsAttributes, UserInstance } from "../models/User";
+import { Follow } from "../models";
+import fs from "fs";
 
 export const userService = {
   create: async (params: UserCreationsAttributes) => {
@@ -18,7 +20,7 @@ export const userService = {
     const user = await User.create(params);
     return user;
   },
-  show: async (nickname: string) => {
+  show: async (nickname: string, userId: number) => {
     const user = await User.findOne({
       where: { nickname },
       attributes: [
@@ -30,8 +32,38 @@ export const userService = {
         "birth",
         ["profile_img", "profileImg"],
         ["profile_banner_img", "profileBannerImg"],
+        [
+          Sequelize.cast(
+            Sequelize.where(
+              Sequelize.col("followings.user_followed_id"),
+              userId
+            ),
+            "boolean"
+          ),
+          "isFollower",
+        ],
+        [
+          Sequelize.cast(
+            Sequelize.where(
+              Sequelize.col("followeds.user_following_id"),
+              userId
+            ),
+            "boolean"
+          ),
+          "isFollowing",
+        ],
       ],
       include: [
+        {
+          model: Follow,
+          as: "followings",
+          attributes: [],
+        },
+        {
+          model: Follow,
+          as: "followeds",
+          attributes: [],
+        },
         {
           model: User,
           as: "followers",
@@ -53,7 +85,7 @@ export const userService = {
     return user;
   },
 
-  search: async (name: string, page: number, perPage: number) => {
+  findByNameOrNickname: async (name: string, page: number, perPage: number) => {
     const offset = (page - 1) * perPage;
 
     const { count, rows } = await User.findAndCountAll({
@@ -69,16 +101,7 @@ export const userService = {
         },
       },
 
-      attributes: [
-        "id",
-        "nickname",
-        "name",
-        "bio",
-        "locale",
-        "birth",
-        ["profile_img", "profileImg"],
-        ["profile_banner_img", "profileBannerImg"],
-      ],
+      attributes: ["id", "nickname", "name", ["profile_img", "profileImg"]],
       offset: offset,
       limit: perPage,
       distinct: true,
@@ -93,18 +116,28 @@ export const userService = {
   },
 
   profileUpdate: async (
-    id: number,
+    user: UserInstance,
     attributes: {
       name: string;
       bio: string;
-      birth: Date;
       locale: string;
-      profileImg: string;
-      profileBannerImg: string;
+      birth?: Date;
+      profileImg?: string;
+      profileBannerImg?: string;
     }
   ) => {
+    if (attributes.profileImg) {
+      if (user.profileImg) {
+        fs.unlinkSync(user.profileImg);
+      }
+    }
+    if (attributes.profileBannerImg) {
+      if (user.profileBannerImg) {
+        fs.unlinkSync(user.profileBannerImg);
+      }
+    }
     const [affectedRows, updatedUsers] = await User.update(attributes, {
-      where: { id },
+      where: { id: user.id },
       returning: true,
     });
     return updatedUsers[0];
@@ -156,7 +189,6 @@ export const userService = {
     const user = await User.findOne({
       where: { email },
     });
-    console.log(user);
     return user;
   },
 

@@ -1,20 +1,22 @@
 import { DataTypes, Optional, Model } from "sequelize";
 import { sequelize } from "../database";
+import { Like } from "./Like";
 
 export interface Post {
   id: number;
   message: string;
+  imageUrls: string[];
   userId: number;
   mediaProductId: number;
 }
 
-export interface PostCreationsAttributes extends Optional<Post, "id"> {}
+export interface PostCreationsAttributes
+  extends Optional<Post, "id" | "imageUrls"> {}
 
 export interface PostInstance
   extends Model<Post, PostCreationsAttributes>,
     Post {
-  isLiked?: boolean;
-  createdAt: Date;
+  createdAt?: Date;
 }
 
 export const Post = sequelize.define<PostInstance, Post>("Post", {
@@ -27,6 +29,10 @@ export const Post = sequelize.define<PostInstance, Post>("Post", {
   message: {
     allowNull: false,
     type: DataTypes.TEXT,
+  },
+  imageUrls: {
+    allowNull: true,
+    type: DataTypes.ARRAY(DataTypes.STRING),
   },
   userId: {
     allowNull: false,

@@ -10,7 +10,6 @@ import {
   MediaGenre,
   MediaProduct,
   Post,
-  PostImage,
   User,
 } from "../../models";
 import { commentResourceOptions } from "./comment";
@@ -22,9 +21,8 @@ import {
   mediaProductResourceOptions,
   mediaProductsResourceFeatures,
 } from "./mediaProduct";
-import { postImageResourceOptions } from "./postImage";
-import { WatchIten } from "../../models/WatchIten";
-import { watchItenResourceOptions } from "./watchIten";
+import { WatchItem } from "../../models/WatchItem";
+import { watchItemResourceOptions } from "./watchItem";
 import { postResourceOptions } from "./post";
 
 export const adminJSResources: ResourceWithOptions[] = [
@@ -67,11 +65,7 @@ export const adminJSResources: ResourceWithOptions[] = [
     options: postResourceOptions,
   },
   {
-    resource: PostImage,
-    options: postImageResourceOptions,
-  },
-  {
-    resource: WatchIten,
-    options: watchItenResourceOptions,
+    resource: WatchItem,
+    options: watchItemResourceOptions,
   },
 ];

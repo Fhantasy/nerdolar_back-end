@@ -6,12 +6,16 @@ import { Like } from "./Like";
 import { MediaGenre } from "./MediaGenre";
 import { MediaProduct } from "./MediaProduct";
 import { Post } from "./Post";
-import { PostImage } from "./PostImage";
 import { User } from "./User";
-import { WatchIten } from "./WatchIten";
+import { WatchItem } from "./WatchItem";
 
 MediaProduct.belongsTo(Category, { as: "category" });
 Category.hasMany(MediaProduct);
+
+WatchItem.belongsTo(Category);
+Category.hasMany(WatchItem, { as: "watchItens" });
+
+MediaProduct.hasMany(WatchItem, { as: "watchItens" });
 
 MediaProduct.belongsToMany(Genre, {
   through: MediaGenre,
@@ -26,10 +30,10 @@ Post.belongsTo(MediaProduct);
 MediaProduct.hasMany(Post);
 
 Post.belongsTo(User);
-User.hasMany(Post);
+User.hasMany(Post, { as: "posts" });
 
-PostImage.belongsTo(Post);
-Post.hasMany(PostImage);
+User.hasMany(Follow, { as: "followeds", foreignKey: "user_followed_id" });
+User.hasMany(Follow, { as: "followings", foreignKey: "user_following_id" });
 
 Post.belongsToMany(User, { through: Comment });
 User.belongsToMany(Post, { through: Comment });
@@ -37,17 +41,17 @@ User.belongsToMany(Post, { through: Comment });
 Post.hasMany(Comment, { as: "comments", foreignKey: "post_id" });
 Comment.belongsTo(User, { as: "user", foreignKey: "user_id" });
 
-Post.belongsToMany(User, { through: Like });
+Post.belongsToMany(User, { through: Like, as: "liked", foreignKey: "post_id" });
 User.belongsToMany(Post, { through: Like });
 
 Like.belongsTo(Post);
 Post.hasMany(Like);
 
-User.belongsToMany(MediaProduct, { through: WatchIten });
-MediaProduct.belongsToMany(User, { through: WatchIten });
+User.belongsToMany(MediaProduct, { through: WatchItem });
+MediaProduct.belongsToMany(User, { through: WatchItem });
 
-User.hasMany(WatchIten, { as: "watchIten", foreignKey: "user_id" });
-WatchIten.belongsTo(MediaProduct, {
+User.hasMany(WatchItem, { as: "watchIten", foreignKey: "user_id" });
+WatchItem.belongsTo(MediaProduct, {
   as: "mediaProduct",
   foreignKey: "media_product_id",
 });
@@ -58,12 +62,12 @@ Follow.belongsTo(User, { foreignKey: "user_following_id", as: "follower" });
 User.belongsToMany(User, {
   through: Follow,
   foreignKey: "user_following_id",
-  as: "followers",
+  as: "following",
 });
 User.belongsToMany(User, {
   through: Follow,
   foreignKey: "user_followed_id",
-  as: "following",
+  as: "followers",
 });
 
 export {
@@ -76,5 +80,4 @@ export {
   MediaGenre,
   MediaProduct,
   Post,
-  PostImage,
 };

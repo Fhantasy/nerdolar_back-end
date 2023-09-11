@@ -1,46 +1,49 @@
-import { Op, Sequelize } from "sequelize";
-import {
-  Category,
-  Comment,
-  Like,
-  MediaProduct,
-  PostImage,
-  User,
-} from "../models";
+import { Sequelize } from "sequelize";
+import { Category, Comment, Like, MediaProduct, User } from "../models";
 import { Post, PostCreationsAttributes, PostInstance } from "../models/Post";
 import { followService } from "./followService";
-import { likeService } from "./likeService";
+import { Op } from "sequelize";
 
 export const postService = {
   create: async (
     params: PostCreationsAttributes,
-    images: Express.Multer.File[]
+    images?: Express.Multer.File[]
   ) => {
-    const post = await Post.create(params);
-
-    if (!images) return;
-
-    images.forEach(async (image) => {
-      await PostImage.create({
-        imgUrl: image.path,
-        postId: post.id,
+    if (!images) {
+      const post = await Post.create(params);
+      return post;
+    } else {
+      const imageUrls = images.map((image) => {
+        return image.path;
       });
-    });
 
-    return post;
+      const post = await Post.create({ ...params, imageUrls });
+      return post;
+    }
   },
 
-  getOne: async (id: number) => {
+  getOne: async (id: number, userId: number) => {
     const post = await Post.findByPk(id, {
       attributes: [
         "id",
         "message",
+        ["image_urls", "imageUrls"],
         ["created_at", "createdAt"],
-        [Sequelize.fn("count", Sequelize.col(`Likes.id`)), "likes"],
+        [Sequelize.fn("COUNT", Sequelize.col("Likes.id")), "likes"],
       ],
       include: [
-        { model: PostImage, attributes: ["id", "imgUrl"] },
-        { model: Like, attributes: [] },
+        {
+          model: Like,
+          attributes: [],
+        },
+        {
+          model: User,
+          as: "liked",
+          attributes: ["nickname"],
+          through: { attributes: [] },
+          where: { id: userId },
+          required: false,
+        },
         {
           model: User,
           attributes: ["id", "nickname", "name", ["profile_img", "profileImg"]],
@@ -75,8 +78,9 @@ export const postService = {
       ],
       group: [
         "Post.id",
-        "PostImages.id",
         "User.id",
+        "liked.id",
+        "liked->Like.id",
         "MediaProduct.id",
         "MediaProduct->category.id",
         "comments.id",
@@ -87,16 +91,38 @@ export const postService = {
     return post;
   },
 
-  getAllFromUser: async (userId: number, page: number, perPage: number) => {
+  getAllFromUser: async (
+    userId: number,
+    currentUserId: number,
+    page: number,
+    perPage: number
+  ) => {
     const offset = (page - 1) * perPage;
 
     const { count, rows } = await Post.findAndCountAll({
       where: {
         userId,
       },
-      attributes: ["id", "message", ["created_at", "createdAt"]],
+      attributes: [
+        "id",
+        "message",
+        ["image_urls", "imageUrls"],
+        ["created_at", "createdAt"],
+        [Sequelize.fn("COUNT", Sequelize.col("Likes.id")), "likes"],
+      ],
       include: [
-        { model: PostImage, attributes: ["id", "imgUrl"] },
+        {
+          model: Like,
+          attributes: [],
+        },
+        {
+          model: User,
+          as: "liked",
+          attributes: ["nickname"],
+          through: { attributes: [] },
+          where: { id: currentUserId },
+          required: false,
+        },
         {
           model: User,
           attributes: ["id", "nickname", "name", ["profile_img", "profileImg"]],
@@ -116,30 +142,57 @@ export const postService = {
       offset,
       order: [["created_at", "DESC"]],
       distinct: true,
+      subQuery: false,
+      group: [
+        "Post.id",
+        "liked.id",
+        "liked->Like.id",
+        "User.id",
+        "MediaProduct.id",
+        "MediaProduct->category.id",
+      ],
     });
-
-    await likeService.includeIsLiked(rows, userId);
 
     return {
       posts: rows,
       page,
       perPage,
-      total: count,
+      total: count.length,
     };
   },
 
-  search: async (term: string, page: number, perPage: number) => {
+  getAllFromMedia: async (
+    userId: number,
+    mediaProductId: number,
+    page: number,
+    perPage: number
+  ) => {
     const offset = (page - 1) * perPage;
 
     const { count, rows } = await Post.findAndCountAll({
       where: {
-        message: {
-          [Op.iLike]: `%${term}%`,
-        },
+        mediaProductId,
       },
-      attributes: ["id", "message", ["created_at", "createdAt"]],
+      attributes: [
+        "id",
+        "message",
+        ["image_urls", "imageUrls"],
+        ["created_at", "createdAt"],
+        [Sequelize.fn("COUNT", Sequelize.col("Likes.id")), "likes"],
+      ],
       include: [
-        { model: PostImage, attributes: ["id", "imgUrl"] },
+        {
+          model: Like,
+          attributes: [],
+        },
+        {
+          model: User,
+          as: "liked",
+          attributes: ["nickname"],
+          through: { attributes: [] },
+          where: { id: userId },
+          required: false,
+        },
         {
           model: User,
           attributes: ["id", "nickname", "name", ["profile_img", "profileImg"]],
@@ -157,14 +210,24 @@ export const postService = {
       ],
       limit: perPage,
       offset,
+      order: [["created_at", "DESC"]],
       distinct: true,
+      subQuery: false,
+      group: [
+        "Post.id",
+        "liked.id",
+        "liked->Like.id",
+        "User.id",
+        "MediaProduct.id",
+        "MediaProduct->category.id",
+      ],
     });
 
     return {
       posts: rows,
       page,
       perPage,
-      total: count,
+      total: count.length,
     };
   },
 
@@ -173,9 +236,10 @@ export const postService = {
 
     const followingUsers = await followService.getFollowings(userId, 1, 999999);
 
-    let postsPromises = followingUsers.folowings.map(async (followingUser) => {
+    let postsPromises = followingUsers.followings.map(async (followingUser) => {
       const posts = await postService.getAllFromUser(
         followingUser.follow!.id!,
+        userId,
         1,
         5
       );
@@ -189,11 +253,83 @@ export const postService = {
     postsFromAllFollowings.forEach((postsGroup) => {
       posts = [...posts, ...postsGroup];
     });
-    posts.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+    posts.sort((a, b) => b.createdAt!.getTime() - a.createdAt!.getTime());
 
     const postsPaginated = posts.splice(offset, perPage);
 
     return postsPaginated;
+  },
+
+  findByMessage: async (
+    term: string,
+    currentUserId: number,
+    page: number,
+    perPage: number
+  ) => {
+    const offset = (page - 1) * perPage;
+
+    const { count, rows } = await Post.findAndCountAll({
+      where: {
+        message: {
+          [Op.iLike]: `%${term}%`,
+        },
+      },
+      attributes: [
+        "id",
+        "message",
+        ["image_urls", "imageUrls"],
+        ["created_at", "createdAt"],
+        [Sequelize.fn("COUNT", Sequelize.col("Likes.id")), "likes"],
+      ],
+      include: [
+        {
+          model: Like,
+          attributes: [],
+        },
+        {
+          model: User,
+          as: "liked",
+          attributes: ["nickname"],
+          through: { attributes: [] },
+          where: { id: currentUserId },
+          required: false,
+        },
+        {
+          model: User,
+          attributes: ["id", "nickname", "name", ["profile_img", "profileImg"]],
+        },
+        {
+          model: MediaProduct,
+          attributes: [
+            "id",
+            "title",
+            ["thumbnail_img", "thumbnailImg"],
+            ["category_id", "categoryId"],
+          ],
+          include: [{ model: Category, as: "category", attributes: ["name"] }],
+        },
+      ],
+      limit: perPage,
+      offset,
+      order: [["created_at", "DESC"]],
+      distinct: true,
+      subQuery: false,
+      group: [
+        "Post.id",
+        "liked.id",
+        "liked->Like.id",
+        "User.id",
+        "MediaProduct.id",
+        "MediaProduct->category.id",
+      ],
+    });
+
+    return {
+      posts: rows,
+      page,
+      perPage,
+      total: count.length,
+    };
   },
 
   delete: async (id: number) => {

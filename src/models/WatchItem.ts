@@ -1,23 +1,26 @@
 import { DataTypes, Optional, Model } from "sequelize";
 import { sequelize } from "../database";
 
-export interface WatchIten {
+export interface WatchItem {
   id: number;
   status: string;
   currentEpisode: number;
   userId: number;
   mediaProductId: number;
+  categoryId: number;
 }
 
-export interface WatchItenCreationsAttributes
-  extends Optional<WatchIten, "id" | "status" | "currentEpisode"> {}
+export interface WatchItemCreationsAttributes
+  extends Optional<WatchItem, "id" | "status" | "currentEpisode"> {}
 
-export interface WatchItenInstance
-  extends Model<WatchIten, WatchItenCreationsAttributes>,
-    WatchIten {}
+export interface WatchItemInstance
+  extends Model<WatchItem, WatchItemCreationsAttributes>,
+    WatchItem {
+  mediaProduct?: { category: { name: string } };
+}
 
-export const WatchIten = sequelize.define<WatchItenInstance, WatchIten>(
-  "WatchIten",
+export const WatchItem = sequelize.define<WatchItemInstance, WatchItem>(
+  "WatchItem",
   {
     id: {
       primaryKey: true,
@@ -27,8 +30,11 @@ export const WatchIten = sequelize.define<WatchItenInstance, WatchIten>(
     },
     status: {
       allowNull: false,
-      defaultValue: "Assistindo",
+      defaultValue: "ongoing",
       type: DataTypes.STRING,
+      validate: {
+        isIn: [["ongoing", "complete"]],
+      },
     },
     currentEpisode: {
       allowNull: false,
@@ -46,6 +52,13 @@ export const WatchIten = sequelize.define<WatchItenInstance, WatchIten>(
       allowNull: false,
       type: DataTypes.INTEGER,
       references: { model: "media_products", key: "id" },
+      onUpdate: "CASCADE",
+      onDelete: "CASCADE",
+    },
+    categoryId: {
+      allowNull: false,
+      type: DataTypes.INTEGER,
+      references: { model: "categories", key: "id" },
       onUpdate: "CASCADE",
       onDelete: "CASCADE",
     },
