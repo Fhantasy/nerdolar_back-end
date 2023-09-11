@@ -2,4 +2,6 @@
 .dist
 .adminjs
 .env
-/public/**
+/public/users
+/public/post-images
+/public/media-products
