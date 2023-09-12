@@ -124,12 +124,7 @@ export const mediaProductsResourceFeatures: FeatureType[] = [
     },
   }),
   uploadFileFeature({
-    provider: {
-      local: {
-        opts: {},
-        bucket: path.join(__dirname, "../../../public"),
-      },
-    },
+    provider: new UploadProvider(),
     properties: {
       key: "pageBannerImg",
       file: "pageBannerImage",

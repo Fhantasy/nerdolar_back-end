@@ -110,12 +110,7 @@ export const userResourceFeatures: FeatureType[] = [
       `public/users/${record.get("id")}/${filename}`,
   }),
   uploadFileFeature({
-    provider: {
-      local: {
-        opts: {},
-        bucket: path.join(__dirname, "../../.."),
-      },
-    },
+    provider: new UploadProvider(),
     properties: {
       key: "profileBannerImg",
       file: "profileBannerImage",
