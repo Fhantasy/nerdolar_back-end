@@ -28,7 +28,3 @@ app.listen(PORT, () => {
   });
   console.log("Conectado");
 });
-
-setInterval(() => {
-  mediaProductService.updateStatus();
-}, 60 * 1000);
