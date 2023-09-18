@@ -1,5 +1,4 @@
 /node_modules
-/dist
 .adminjs
 .env
 public/users
